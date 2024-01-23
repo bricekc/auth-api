@@ -7,6 +7,7 @@
         "php": ">=8.1",
         "ext-ctype": "*",
         "ext-iconv": "*",
+        "ext-zip": "^1.19",
         "api-platform/core": "3.2",
         "doctrine/doctrine-bundle": "^2.11",
         "doctrine/doctrine-migrations-bundle": "^3.3",
@@ -61,11 +62,21 @@
             "cache:clear": "symfony-cmd",
             "assets:install %PUBLIC_DIR%": "symfony-cmd"
         },
-        "post-install-cmd": [
-            "@auto-scripts"
+        "start": [
+            "Composer\\Config::disableProcessTimeout",
+            "symfony serve"
         ],
-        "post-update-cmd": [
-            "@auto-scripts"
+        "test:cs":
+        [
+            "php vendor/bin/php-cs-fixer fix --dry-run"
+        ],
+        "fix:cs":
+        [
+            "php vendor/bin/php-cs-fixer fix"
+        ],
+        "test": [
+            "@test:cs",
+            "@test:codeception"
         ]
     },
     "conflict": {
@@ -76,5 +87,9 @@
             "allow-contrib": false,
             "require": "6.3.*"
         }
+    },
+    "require-dev": {
+        "friendsofphp/php-cs-fixer": "^3.48",
+        "symfony/maker-bundle": "^1.52"
     }
 }
