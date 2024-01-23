@@ -30,22 +30,13 @@ use Zenstruck\Foundry\RepositoryProxy;
  */
 final class UserFactory extends ModelFactory
 {
-    private $passwordHasher;
+    private UserPasswordHasherInterface $passwordHasher;
 
     public function __construct(UserPasswordHasherInterface $passwordHasher)
     {
         parent::__construct();
 
         $this->passwordHasher = $passwordHasher;
-    }
-
-    protected static function createAvatar(string $value)
-    {
-        $icon = new \Jdenticon\Identicon();
-        $icon->setValue($value);
-        $icon->setSize(50);
-
-        return fopen($icon->getImageDataUri('png'), 'r');
     }
 
     /**
@@ -59,12 +50,15 @@ final class UserFactory extends ModelFactory
         $lastname = self::faker()->lastName();
 
         return [
-            'login' => self::faker()->unique()->numerify('user-###'),
             'roles' => [],
             'password' => 'test',
             'firstname' => $firstname,
             'lastname' => $lastname,
-            'mail' => self::faker()->unique()->safeEmail(),
+            'email' => self::faker()->unique()->safeEmail(),
         ];
+    }
+    protected static function getClass(): string
+    {
+        return User::class;
     }
 }
