@@ -7,18 +7,40 @@ use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Put;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
+use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
+#[Get(normalizationContext: ['groups' => ['get_User']])]
 #[ApiResource]
+#[Put(
+    normalizationContext: ['groups' => ['get_User', 'get_Me']],
+    denormalizationContext: ['groups' => ['set_User']],
+    security: "is_granted('ROLE_USER') and user == object"
+)]
+#[Patch(
+    normalizationContext: ['groups' => ['get_User', 'get_Me']],
+    denormalizationContext: ['groups' => ['set_User']],
+    security: "is_granted('ROLE_USER') and user == object"
+)]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['get_User'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 180, unique: true)]
+    #[Groups(['get_User', 'set_User'])]
     private ?string $email = null;
 
     #[ORM\Column]
@@ -28,12 +50,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @var string The hashed password
      */
     #[ORM\Column]
+    #[Groups(['set_User'])]
     private ?string $password = null;
 
     #[ORM\Column(length: 30)]
+    #[Groups(['get_User', 'set_User'])]
     private ?string $firstname = null;
 
     #[ORM\Column(length: 40)]
+    #[Groups(['get_User', 'set_User'])]
     private ?string $lastname = null;
 
     public function getId(): ?int

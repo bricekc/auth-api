@@ -35,7 +35,6 @@ final class UserFactory extends ModelFactory
     public function __construct(UserPasswordHasherInterface $passwordHasher)
     {
         parent::__construct();
-
         $this->passwordHasher = $passwordHasher;
     }
 
@@ -56,6 +55,15 @@ final class UserFactory extends ModelFactory
             'lastname' => $lastname,
             'email' => self::faker()->unique()->safeEmail(),
         ];
+    }
+
+    protected function initialize(): self
+    {
+        return $this
+            ->afterInstantiate(function (User $user) {
+                $user->setPassword($this->passwordHasher->hashPassword($user, $user->getPassword()));
+            })
+            ;
     }
     protected static function getClass(): string
     {
