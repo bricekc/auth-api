@@ -61,6 +61,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups(['get_User', 'set_User'])]
     private ?string $lastname = null;
 
+    #[ORM\ManyToOne(inversedBy: 'users')]
+    private ?Conversation $conversations = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -151,6 +154,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setLastname(string $lastname): static
     {
         $this->lastname = $lastname;
+
+        return $this;
+    }
+
+    public function getConversations(): ?Conversation
+    {
+        return $this->conversations;
+    }
+
+    public function setConversations(?Conversation $conversations): static
+    {
+        $this->conversations = $conversations;
 
         return $this;
     }

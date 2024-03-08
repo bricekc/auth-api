@@ -54,6 +54,7 @@ final class UserFactory extends ModelFactory
             'firstname' => $firstname,
             'lastname' => $lastname,
             'email' => self::faker()->unique()->safeEmail(),
+            'conversations'=> ConversationFactory::random()
         ];
     }
 
